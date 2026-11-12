@@ -1,0 +1,12 @@
+export type Severity = 'critical' | 'high' | 'medium';
+export type Incident = {id:string;title:string;severity:Severity;service:string;status:'open'|'investigating';occurredAt:string;summary:string;logs:string[];signals:Record<string,string|number>};
+export const incidents:Incident[]=[
+{id:'INC-1042',title:'VM lab provisioning timeout',severity:'critical',service:'vm-provisioner',status:'open',occurredAt:'2026-11-12T09:14:00Z',summary:'Learner lab provisioning exceeded the startup deadline for multiple requests.',logs:['09:14:01 provision requested lab LAB-1042','09:14:03 instance allocation started','09:15:33 upstream compute allocation timed out','09:15:34 provision marked failed'],signals:{region:'canadacentral',pendingRequests:27,p95LatencyMs:92000,recentDeploy:'none'}},
+{id:'INC-1043',title:'Knowledge API elevated 429 errors',severity:'high',service:'knowledge-api',status:'open',occurredAt:'2026-11-12T10:07:00Z',summary:'Knowledge retrieval API has exceeded its configured rate limit.',logs:['10:07:10 GET /documents 429','10:07:11 retry-after=3','10:07:13 request queued','10:07:16 request recovered'],signals:{requestsPerMinute:180,configuredLimit:120,p95LatencyMs:2400,recentDeploy:'v2.8.1'}},
+{id:'INC-1044',title:'Identity token validation errors',severity:'medium',service:'auth-gateway',status:'investigating',occurredAt:'2026-11-12T11:30:00Z',summary:'Requests with expired access tokens are being rejected by the API gateway.',logs:['11:30:00 JWT validation failed: token expired','11:30:01 request rejected 401','11:30:12 client refreshed token','11:30:13 request accepted'],signals:{unauthorizedCount:18,lastKeyRotation:'2026-10-28',p95LatencyMs:120}}
+];
+export const runbooks=[
+{id:'RB-VM-01',title:'VM provisioning timeout',keywords:['vm','provision','timeout','allocation'],steps:['Inspect compute capacity and pending queue.','Check upstream allocation timeouts and regional health.','If capacity is healthy, request operator approval before retrying a single lab.']},
+{id:'RB-API-02',title:'API rate limiting',keywords:['429','rate','limit','knowledge'],steps:['Inspect rate-limit headers and request volume.','Use bounded exponential backoff with jitter.','Review deployment and quota settings before increasing capacity.']},
+{id:'RB-AUTH-03',title:'JWT authentication failures',keywords:['jwt','token','identity','401'],steps:['Verify token issuer, audience and expiry.','Confirm client refresh logic.','Never bypass signature validation to restore service.']}
+];
